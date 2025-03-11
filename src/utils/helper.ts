@@ -26,7 +26,10 @@ export const parseCSV = async ({
   const allowedKeys = ["S. No.", "Product Name", "Input Image Urls"];
 
   const filteredData = data.filter(
-    (obj: any) =>
+    (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      obj: any
+    ) =>
       Object.keys(obj).length === 3 &&
       allowedKeys.every((key) => obj.hasOwnProperty(key) && obj[key]) // Ensure all keys exist & have values
   );

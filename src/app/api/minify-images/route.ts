@@ -26,7 +26,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const imageUrlArray = image.data.map((item: any) => item.inputImageUrls);
+    const imageUrlArray = image.data.map(
+      (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        item: any
+      ) => item.inputImageUrls
+    );
     const outputImageUrls: string[][] = [];
 
     for (let i = 0; i < imageUrlArray.length; i++) {
@@ -71,7 +76,7 @@ export async function POST(request: NextRequest) {
           // Upload the compressed image to Cloudinary
           const uploadedUrl = await new Promise<string>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
-              { resource_type: "image" },
+              { resource_type: "image", folder: image.id },
               (error, result) => {
                 if (error) {
                   console.error("Cloudinary upload failed:", error);
@@ -80,7 +85,7 @@ export async function POST(request: NextRequest) {
                     reject(error);
                   });
                 } else {
-                  resolve(result?.secure_url!);
+                  resolve(result?.secure_url as string);
                 }
               }
             );
@@ -107,7 +112,10 @@ export async function POST(request: NextRequest) {
       status: 200,
       updatedImage,
     });
-  } catch (err: any) {
+  } catch (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    err: any
+  ) {
     console.error(`Error in POST:`, err);
 
     return NextResponse.json({

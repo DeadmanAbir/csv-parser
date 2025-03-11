@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { Search, Loader2, File, Download } from "lucide-react";
 import { ProcessedResult } from "@/utils/types";
+import { Parser } from "@json2csv/plainjs";
 
 interface StatusCheckProps {
-  setResults?: React.Dispatch<React.SetStateAction<ProcessedResult[]>>;
+  results: ProcessedResult[];
+  setResults: React.Dispatch<React.SetStateAction<ProcessedResult[]>>;
 }
 
-export function StatusCheck({ setResults }: StatusCheckProps) {
+export function StatusCheck({ results, setResults }: StatusCheckProps) {
   const [requestId, setRequestId] = useState("");
   const [status, setStatus] = useState<
     "PROCESSING" | "COMPLETED" | "FAILED" | "error" | null
@@ -25,15 +27,18 @@ export function StatusCheck({ setResults }: StatusCheckProps) {
     setStatus(null);
 
     try {
-      const response = await fetch(`/api/get-status/${requestId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `/api/get-status/${requestId}?returnData=false`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
-
+      console.log(data);
       if (data.success) {
         setStatus(data.data);
         // Set appropriate message based on status
@@ -62,7 +67,83 @@ export function StatusCheck({ setResults }: StatusCheckProps) {
     checkStatus();
   };
 
-  // Map status to appropriate color classes
+  const handleShowCSV = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const response = await fetch(
+      `/api/get-status/${requestId}?returnData=true`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (Array.isArray(data.data.data)) {
+      data.data.data.forEach(
+        (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          item: any
+        ) => delete item._id
+      );
+    }
+
+    setResults(data.data.data);
+  };
+
+  const handleDownloadCSV = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Preprocess the results to convert inputImageUrls and outputImageUrls arrays to comma-separated strings
+    const processedResults = results.map((item) => {
+      // Clone the item to avoid mutating the original data
+      const newItem = { ...item };
+
+      // Function to join array into a comma-separated string
+      const arrayToCommaSeparatedString = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        array: any
+      ) => (Array.isArray(array) ? array.join(",") : array);
+
+      // Convert inputImageUrls if it exists
+      if (newItem.inputImageUrls) {
+        newItem.inputImageUrls = arrayToCommaSeparatedString(
+          newItem.inputImageUrls
+        );
+      }
+
+      // Convert outputImageUrls if it exists
+      if (newItem.outputImageUrls) {
+        newItem.outputImageUrls = arrayToCommaSeparatedString(
+          newItem.outputImageUrls
+        );
+      }
+
+      return newItem;
+    });
+
+    const parser = new Parser();
+    const csv = parser.parse(processedResults);
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    // Create a link element
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "output.csv");
+
+    // Append the link to the body
+    document.body.appendChild(link);
+
+    // Trigger the download
+    link.click();
+
+    // Clean up and remove the link
+    document.body.removeChild(link);
+  };
+
   const getStatusColor = () => {
     switch (status) {
       case "COMPLETED":
@@ -130,11 +211,17 @@ export function StatusCheck({ setResults }: StatusCheckProps) {
           {/* CSV buttons - only shown when status is COMPLETED */}
           {status === "COMPLETED" && (
             <div className="flex gap-2 mt-4">
-              <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
+              <button
+                onClick={handleShowCSV}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors cursor-pointer"
+              >
                 <File className="h-4 w-4" />
                 Show CSV
               </button>
-              <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors">
+              <button
+                onClick={handleDownloadCSV}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors cursor-pointer"
+              >
                 <Download className="h-4 w-4" />
                 Download CSV
               </button>

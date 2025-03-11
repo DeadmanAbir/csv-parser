@@ -5,10 +5,9 @@ import type { CSVPreviewData, ProcessingRequest } from "@/utils/types";
 import { parseCSV, validateFile } from "@/utils/helper";
 interface FileUploadProps {
   setRequest: React.Dispatch<React.SetStateAction<ProcessingRequest | null>>;
-  onUpload: (file: File) => void;
 }
 
-export function FileUpload({ onUpload, setRequest }: FileUploadProps) {
+export function FileUpload({ setRequest }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [csvPreview, setCsvPreview] = useState<CSVPreviewData | null>(null);
@@ -23,22 +22,16 @@ export function FileUpload({ onUpload, setRequest }: FileUploadProps) {
     }
   }, []);
 
-  const handleDrop = useCallback(
-    async (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(false);
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
-      const file = e.dataTransfer.files?.[0];
-      if (file && validateFile({ file, setError })) {
-        await parseCSV({ file, setError, setCsvPreview });
-        if (!error) {
-          onUpload(file);
-        }
-      }
-    },
-    [onUpload, error]
-  );
+    const file = e.dataTransfer.files?.[0];
+    if (file && validateFile({ file, setError })) {
+      await parseCSV({ file, setError, setCsvPreview });
+    }
+  }, []);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +61,7 @@ export function FileUpload({ onUpload, setRequest }: FileUploadProps) {
             status: "processing",
             progress: 50,
           });
-          onUpload(file);
+
           //another fetch request send id as body
           fetch("/api/minify-images", {
             method: "POST",
@@ -80,7 +73,7 @@ export function FileUpload({ onUpload, setRequest }: FileUploadProps) {
         }
       }
     },
-    [onUpload, setRequest, setError]
+    [setRequest, setError, error]
   );
 
   return (
@@ -114,8 +107,8 @@ export function FileUpload({ onUpload, setRequest }: FileUploadProps) {
             Drop your CSV file here, or click to browse
           </p>
           <p className="mt-2 text-sm text-gray-500">
-            CSV must contain 'S. No.' and 'Product Name' and 'Input Image Urls'
-            columns
+            CSV must contain &apos;S. No.&apos; and &apos;Product Name&apos; and
+            &apos;Input Image Urls&apos; columns
           </p>
           {error && (
             <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded-md border border-red-200">

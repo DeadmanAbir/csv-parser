@@ -37,7 +37,10 @@ export async function POST(request: NextRequest) {
       status: 200,
       productId: result.id,
     });
-  } catch (err: any) {
+  } catch (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    err: any
+  ) {
     console.error(`Error in POST:`, err);
 
     return NextResponse.json({

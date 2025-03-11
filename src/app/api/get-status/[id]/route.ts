@@ -6,7 +6,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = await params;
-  console.log(id);
+  const returnData = request.nextUrl.searchParams.get("returnData");
+  console.log(id, returnData);
   try {
     const image = await Product.findOne({ id });
 
@@ -17,13 +18,15 @@ export async function GET(
         error: "Product not found",
       });
     }
-    console.log(image.status);
     return NextResponse.json({
       success: true,
       status: 200,
-      data: image.status,
+      data: returnData === "true" ? image : image.status,
     });
-  } catch (error: any) {
+  } catch (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    error: any
+  ) {
     console.error(error);
     return NextResponse.json({
       success: false,
