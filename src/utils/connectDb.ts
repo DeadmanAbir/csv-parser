@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 declare global {
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   var mongoose: any;
 }
 

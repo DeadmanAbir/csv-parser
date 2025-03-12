@@ -41,7 +41,7 @@ export const parseCSV = async ({
     setCsvPreview(null);
     return "CSV file must contain headers and at least one row of correct formatted data";
   }
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   setCsvPreview(filteredData);
   return filteredData;
