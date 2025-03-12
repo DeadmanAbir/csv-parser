@@ -1,7 +1,6 @@
 import Product from "@/models/Product";
 import dbConnect from "@/utils/connectDb";
 import { parseCSV, validateFile } from "@/utils/helper";
-import { CSVPreview, CSVPreviewData } from "@/utils/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 300;

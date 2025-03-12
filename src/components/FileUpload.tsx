@@ -2,8 +2,7 @@
 import React, { useCallback, useState } from "react";
 import { Upload, Table, Loader2 } from "lucide-react";
 import type { CSVPreviewData, ProcessingRequest } from "@/utils/types";
-import { parseCSV, validateFile } from "@/utils/helper";
-import { set } from "mongoose";
+import { validateFile } from "@/utils/helper";
 
 interface FileUploadProps {
   setRequest: React.Dispatch<React.SetStateAction<ProcessingRequest | null>>;
@@ -24,8 +23,11 @@ export function FileUpload({ setRequest }: FileUploadProps) {
 
       const isValid = file && validateFile({ file });
 
-      isValid ? setError(null) : setError("Please upload a CSV file");
-
+      if (isValid) {
+        setError(null);
+      } else {
+        setError("Please upload a CSV file");
+      }
       if (file && isValid) {
         // const csvData = await parseCSV({ file, setError, setCsvPreview });
 
