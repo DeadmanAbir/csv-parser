@@ -27,8 +27,6 @@ export type CSVPreviewData = CSVPreview[];
 
 export interface ParseCSVParams {
   file: File;
-  setError: React.Dispatch<React.SetStateAction<string | null>>;
-  setCsvPreview: React.Dispatch<React.SetStateAction<CSVPreviewData | null>>;
 }
 
-export type ValidateFileParam = Omit<ParseCSVParams, "setCsvPreview">;
+export type ValidateFileParam = ParseCSVParams;

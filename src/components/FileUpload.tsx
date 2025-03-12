@@ -1,8 +1,9 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { Upload, Table } from "lucide-react";
+import { Upload, Table, Loader2 } from "lucide-react";
 import type { CSVPreviewData, ProcessingRequest } from "@/utils/types";
 import { parseCSV, validateFile } from "@/utils/helper";
+import { set } from "mongoose";
 
 interface FileUploadProps {
   setRequest: React.Dispatch<React.SetStateAction<ProcessingRequest | null>>;
@@ -11,43 +12,54 @@ interface FileUploadProps {
 export function FileUpload({ setRequest }: FileUploadProps) {
   const [error, setError] = useState<string | null>(null);
   const [csvPreview, setCsvPreview] = useState<CSVPreviewData | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
+      setLoading(true);
+      const formData = new FormData();
+      if (file) {
+        formData.append("file", file);
+      }
 
-      if (file && validateFile({ file, setError })) {
-        const csvData = await parseCSV({ file, setError, setCsvPreview });
+      const isValid = file && validateFile({ file });
 
-        if (!error && csvData && typeof csvData !== "string") {
-          const response = await fetch("/api/process-csv", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ csvData }),
-          });
-          const data = await response.json();
+      isValid ? setError(null) : setError("Please upload a CSV file");
 
-          if (data.success === false) {
-            setError(data.error);
-            return;
-          }
+      if (file && isValid) {
+        // const csvData = await parseCSV({ file, setError, setCsvPreview });
 
-          setRequest({
-            id: data.productId,
-            status: "processing",
-            progress: 50,
-          });
+        const response = await fetch("/api/process-csv", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
 
-          fetch("/api/minify-images", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id: data.productId }),
-          });
+        if (data.success == false) {
+          setError(data.error);
+          setLoading(false);
+          return;
         }
+        if (typeof data.csvData == "string") {
+          setError(data.csvData);
+          setCsvPreview(null);
+          setLoading(false);
+          return;
+        }
+        setCsvPreview(data.csvData);
+        setRequest({
+          id: data.productId,
+          status: "processing",
+          progress: 50,
+        });
+
+        fetch("/api/minify-images", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: data.productId }),
+        });
       }
     },
     [setRequest, setError, error]
@@ -56,12 +68,18 @@ export function FileUpload({ setRequest }: FileUploadProps) {
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="relative border-2 border-dashed rounded-lg p-8 transition-colors border-gray-300 hover:border-gray-400">
-        <input
-          type="file"
-          accept=".csv"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          onChange={handleChange}
-        />
+        {loading ? (
+          <Loader2 />
+        ) : (
+          <input
+            type="file"
+            accept=".csv"
+            disabled={loading}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            onChange={handleChange}
+          />
+        )}
+
         <div className="text-center">
           <Upload className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-4 text-lg font-medium text-gray-700">

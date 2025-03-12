@@ -1,19 +1,14 @@
 import { ParseCSVParams, ValidateFileParam } from "./types";
 import Papa from "papaparse";
-export const validateFile = ({ file, setError }: ValidateFileParam) => {
+export const validateFile = ({ file }: ValidateFileParam) => {
   if (!file.name.endsWith(".csv")) {
-    setError("Please upload a CSV file");
     return false;
   }
-  setError(null);
+
   return true;
 };
 
-export const parseCSV = async ({
-  file,
-  setError,
-  setCsvPreview,
-}: ParseCSVParams) => {
+export const parseCSV = async ({ file }: ParseCSVParams) => {
   const text = file.stream().getReader();
   const result = await text.read();
   const decoder = new TextDecoder("utf-8");
@@ -35,15 +30,15 @@ export const parseCSV = async ({
   );
 
   if (filteredData.length === 0) {
-    setError(
-      "CSV file must contain headers and at least one row of correct formatted data"
-    );
-    setCsvPreview(null);
+    // setError(
+    //   "CSV file must contain headers and at least one row of correct formatted data"
+    // );
+    // setCsvPreview(null);
     return "CSV file must contain headers and at least one row of correct formatted data";
   }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  setCsvPreview(filteredData);
+  // setCsvPreview(filteredData);
   return filteredData;
 };
 

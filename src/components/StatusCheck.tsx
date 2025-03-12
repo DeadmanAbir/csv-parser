@@ -51,7 +51,7 @@ export function StatusCheck({ results, setResults }: StatusCheckProps) {
         );
       } else {
         setStatus("error");
-        setStatusMessage(data.message || "Failed to fetch status");
+        setStatusMessage(data.error || "Failed to fetch status");
       }
     } catch (error) {
       console.error("Error checking status:", error);
