@@ -1,4 +1,5 @@
 import Product from "@/models/Product";
+import dbConnect from "@/utils/connectDb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -9,6 +10,7 @@ export async function GET(
   const returnData = request.nextUrl.searchParams.get("returnData");
   console.log(id, returnData);
   try {
+    await dbConnect();
     const image = await Product.findOne({ id });
 
     if (!image) {

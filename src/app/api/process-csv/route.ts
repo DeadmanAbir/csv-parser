@@ -1,4 +1,5 @@
 import Product from "@/models/Product";
+import dbConnect from "@/utils/connectDb";
 import { CSVPreviewData } from "@/utils/types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { csvData }: { csvData: CSVPreviewData } = body;
-
+    await dbConnect();
     const products = csvData.map((item) => {
       const inputImageUrls = item["Input Image Urls"]
         ? item["Input Image Urls"]

@@ -54,7 +54,7 @@ export function FileUpload({ setRequest }: FileUploadProps) {
             setError(data.error);
             return;
           }
-          console.log("Upload success:", data);
+          console.log("Upload success:", data, typeof data.success);
           setRequest(data);
           setRequest({
             id: data.productId,

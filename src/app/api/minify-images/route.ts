@@ -2,6 +2,7 @@ import Product from "@/models/Product";
 import sharp from "sharp";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import dbConnect from "@/utils/connectDb";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { id }: { id: string } = body;
-
+    await dbConnect();
     // Fetch product
     const image = await Product.findOne({ id });
     if (!image) {
