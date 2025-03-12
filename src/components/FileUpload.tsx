@@ -50,7 +50,7 @@ export function FileUpload({ setRequest }: FileUploadProps) {
           });
           const data = await response.json();
 
-          if (data.sucess === false) {
+          if (data.sucess == false) {
             setError(data.error);
             return;
           }
