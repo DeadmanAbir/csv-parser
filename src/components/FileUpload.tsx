@@ -3,35 +3,14 @@ import React, { useCallback, useState } from "react";
 import { Upload, Table } from "lucide-react";
 import type { CSVPreviewData, ProcessingRequest } from "@/utils/types";
 import { parseCSV, validateFile } from "@/utils/helper";
+
 interface FileUploadProps {
   setRequest: React.Dispatch<React.SetStateAction<ProcessingRequest | null>>;
 }
 
 export function FileUpload({ setRequest }: FileUploadProps) {
-  const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [csvPreview, setCsvPreview] = useState<CSVPreviewData | null>(null);
-
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  }, []);
-
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    const file = e.dataTransfer.files?.[0];
-    if (file && validateFile({ file, setError })) {
-      await parseCSV({ file, setError, setCsvPreview });
-    }
-  }, []);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,19 +29,17 @@ export function FileUpload({ setRequest }: FileUploadProps) {
           });
           const data = await response.json();
 
-          if (data.sucess == false) {
+          if (data.success === false) {
             setError(data.error);
             return;
           }
-          console.log("Upload success:", data, typeof data.success);
-          setRequest(data);
+
           setRequest({
             id: data.productId,
             status: "processing",
             progress: 50,
           });
 
-          //another fetch request send id as body
           fetch("/api/minify-images", {
             method: "POST",
             headers: {
@@ -78,19 +55,7 @@ export function FileUpload({ setRequest }: FileUploadProps) {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div
-        className={`relative border-2 border-dashed rounded-lg p-8 transition-colors ${
-          dragActive
-            ? "border-blue-500 bg-blue-50"
-            : error
-            ? "border-red-300 bg-red-50"
-            : "border-gray-300 hover:border-gray-400"
-        }`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-      >
+      <div className="relative border-2 border-dashed rounded-lg p-8 transition-colors border-gray-300 hover:border-gray-400">
         <input
           type="file"
           accept=".csv"
@@ -98,16 +63,12 @@ export function FileUpload({ setRequest }: FileUploadProps) {
           onChange={handleChange}
         />
         <div className="text-center">
-          <Upload
-            className={`mx-auto h-12 w-12 ${
-              error ? "text-red-400" : "text-gray-400"
-            }`}
-          />
+          <Upload className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-4 text-lg font-medium text-gray-700">
-            Drop your CSV file here, or click to browse
+            Click to browse and upload your CSV file
           </p>
           <p className="mt-2 text-sm text-gray-500">
-            CSV must contain &apos;S. No.&apos; and &apos;Product Name&apos; and
+            CSV must contain &apos;S. No.&apos;, &apos;Product Name&apos;, and
             &apos;Input Image Urls&apos; columns
           </p>
           {error && (
