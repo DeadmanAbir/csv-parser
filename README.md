@@ -77,11 +77,75 @@ The system generates processed data, which may include modified image URLs or ot
     * Staus of processing request.
     * Processed data and results.
 
-##   Documentation
 
-* **API Documentation:** Comprehensive API documentation should be provided, detailing: [cite: 21]
-    * Endpoints.
-    * Request formats.
-    * Response formats.
+###   API Documentation
+
+This section details the API endpoints for interacting with the CSV Image Processing System.
+
+1.  **Upload API:**
+
+    * **Endpoint:** `https://csv-parser-theta.vercel.app/api/process-csv`
+    * **Method:** `POST`
+    * **Description:** This endpoint accepts CSV data (formatted as JSON) from the frontend. It stores the provided data in the database and initiates the processing workflow.
+    * **Request Body:**
+        
+        *             The request body should contain the CSV data formatted as a JSON object. The structure of the JSON should mirror the expected CSV format (e.g., an array of objects, where each object represents a row).
+        
+        * Example Request Body:
+            
+            ```json
+            [
+              {
+                "S. No.": "1",
+                "Product Name": "SKU1",
+                "Input Image Urls": "url1.jpg,url2.jpg,url3.jpg"
+              },
+              {
+                "S. No.": "2",
+                "Product Name": "SKU2",
+                "Input Image Urls": "url4.jpg,url5.jpg,url6.jpg"
+              }
+            ]
+            ```
+            
+    * **Response:**
+        
+        *             A successful response will typically include a unique request ID, which can be used to track the processing status.
+        
+
+2.  **Image Processing Initiation API:**
+
+    * **Endpoint:** `https://csv-parser-theta.vercel.app/api/minify-images`
+    * **Method:** `POST`
+    * **Description:** This endpoint takes a request ID as input and initiates the asynchronous image compression process. It returns a request ID specifically for the image minification process.
+    * **Request Body:**
+        
+        *             The request body should include the `request ID` of the previously uploaded CSV data for which image processing is to be started.
+        
+        * Example Request Body:
+            
+            ```json
+            {
+              "requestId": "your-csv-upload-request-id"
+            }
+            ```
+            
+    * **Response:**
+        
+        *             A successful response will include a unique request ID for the image minification process, which can be used to track the image processing status.
+        
+
+3.  **Processing Status API:**
+
+    * **Endpoint:** `https://csv-parser-theta.vercel.app/api/get-status/{requestId}`
+    * **Method:** `GET`
+    * **Description:** This is a dynamic API endpoint. It allows users to retrieve the processing status of an asynchronous operation. The `{requestId}` in the URL is a placeholder for the specific request ID you want to query.
+    * **Parameters:**
+        
+        *             `requestId` (in the URL path): The unique identifier of the processing request.
+            
+    * **Response:**
+        
+        *             The response will contain the status of the asynchronous process. This might include states like "Pending," "Processing," "Completed," or "Error," along with any relevant details or messages.
 
 * **Worker Documentation:** If asynchronous workers are used, documentation should describe their functions, processes, and any relevant configurations. 
