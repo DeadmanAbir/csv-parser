@@ -11,10 +11,10 @@ The system provides the following core functionalities:
 1.  **CSV Data Input:** The system accepts CSV files as input, expecting a defined format for data organization.
 
     - **Example CSV Format:**
-      | S. No. | Product Name | Input Image Urls URLs        |
+      | S. No. | Product Name | Input Image Urls URLs |
       | :----- | :----------- | :--------------------------- |
-      | 1      | Product A    | url1.jpg, url2.jpg, url3.jpg |
-      | 2      | Product B    | url4.jpg, url5.jpg, url6.jpg |
+      | 1 | Product A | url1.jpg, url2.jpg, url3.jpg |
+      | 2 | Product B | url4.jpg, url5.jpg, url6.jpg |
 
 2.  **Data Validation:** Upon receiving a CSV file, the system validates its format to ensure it adheres to the expected structure.
 3.  **Asynchronous Image Processing:** The system processes images referenced by URLs within the CSV file asynchronously. This processing includes operations such as resizing, compression upto 50%.
@@ -78,38 +78,37 @@ This section details the API endpoints for interacting with the CSV Image Proces
 
 1. **Upload API:**
 
-* **Endpoint:** `https://csv-parser-theta.vercel.app/api/process-csv`
-* **Method:** `POST`
-* **Description:** This endpoint accepts CSV files as input. It processes the CSV data, stores it in the database, and initiates the processing workflow. The API returns a unique status ID for the process, along with the JSON formatted data derived from the CSV file.
-* **Request Body:**
-    * The request body should contain the CSV file data encoded as `multipart/form-data`. You'll typically have a field in the form data (e.g., named "csvfile") containing the CSV file.
-    * * Example:*
-        
-        *             To send the CSV file, you would use a `multipart/form-data` request. The form data would include a field, for example, "csvfile", with the actual CSV file as the value.
-            
-* **Response:**
-    * A successful response will include:
-        *             A unique status ID, which can be used to track the processing status.
-        *             The JSON formatted data derived from the CSV file.
-    * * Example Response:*
-        
-        ```json
-        {
-          "statusId": "your-unique-status-id",
-          "csvData": [
-            {
-              "S. No.": "1",
-              "Product Name": "SKU1",
-              "Input Image Urls": "url1.jpg,url2.jpg,url3.jpg"
-            },
-            {
-              "S. No.": "2",
-              "Product Name": "SKU2",
-              "Input Image Urls": "url4.jpg,url5.jpg,url6.jpg"
-            }
-          ]
-        }
-        ```
+- **Endpoint:** `https://csv-parser-theta.vercel.app/api/process-csv`
+- **Method:** `POST`
+- **Description:** This endpoint accepts CSV files as input. It processes the CSV data, stores it in the database, and initiates the processing workflow. The API returns a unique status ID for the process, along with the JSON formatted data derived from the CSV file.
+- **Request Body:**
+  - The request body should contain the CSV file data encoded as `multipart/form-data`. You'll typically have a field in the form data (e.g., named "csvfile") containing the CSV file.
+  - - Example:\*
+
+      - To send the CSV file, you would use a `multipart/form-data` request. The form data would include a field, for example, "csvfile", with the actual CSV file as the value.
+- **Response:**
+  - A successful response will include:
+    - A unique status ID, which can be used to track the processing status.
+    - The JSON formatted data derived from the CSV file.
+  - - Example Response:\*
+
+      ```json
+      {
+        "statusId": "your-unique-status-id",
+        "csvData": [
+          {
+            "S. No.": "1",
+            "Product Name": "SKU1",
+            "Input Image Urls": "url1.jpg,url2.jpg,url3.jpg"
+          },
+          {
+            "S. No.": "2",
+            "Product Name": "SKU2",
+            "Input Image Urls": "url4.jpg,url5.jpg,url6.jpg"
+          }
+        ]
+      }
+      ```
 
 2.  **Image Processing Initiation API:**
 
@@ -117,6 +116,7 @@ This section details the API endpoints for interacting with the CSV Image Proces
     - **Method:** `POST`
     - **Description:** This endpoint takes a request ID as input and initiates the asynchronous image compression process. It returns a request ID specifically for the image minification process.
     - **Request Body:**
+
       - The request body should include the `request ID` of the previously uploaded CSV data for which image processing is to be started.
 
       - Example Request Body:
@@ -125,6 +125,7 @@ This section details the API endpoints for interacting with the CSV Image Proces
           "requestId": "your-csv-upload-request-id"
         }
         ```
+
     - **Response:**
       - A successful response will include a unique request ID for the image minification process, which can be used to track the image processing status.
 
