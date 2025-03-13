@@ -1,6 +1,12 @@
 import Product from "@/models/Product";
 import dbConnect from "@/utils/connectDb";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+const statusCheckValidator = z.object({
+  id: z.string(),
+  returnData: z.enum(["true", "false"]).optional(),
+});
 
 export async function GET(
   request: NextRequest,
@@ -9,6 +15,7 @@ export async function GET(
   const { id } = await params;
   const returnData = request.nextUrl.searchParams.get("returnData");
   console.log(id, returnData);
+  statusCheckValidator.parse({ id, returnData });
   try {
     await dbConnect();
     const image = await Product.findOne({ id });

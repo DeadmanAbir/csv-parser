@@ -1,8 +1,9 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { Upload, Table, Loader2 } from "lucide-react";
+import { Upload, Table } from "lucide-react";
 import type { CSVPreviewData, ProcessingRequest } from "@/utils/types";
 import { validateFile } from "@/utils/helper";
+import { set } from "mongoose";
 
 interface FileUploadProps {
   setRequest: React.Dispatch<React.SetStateAction<ProcessingRequest | null>>;
@@ -54,7 +55,7 @@ export function FileUpload({ setRequest }: FileUploadProps) {
           status: "processing",
           progress: 50,
         });
-
+        setLoading(false);
         fetch("/api/minify-images", {
           method: "POST",
           headers: {
@@ -71,32 +72,33 @@ export function FileUpload({ setRequest }: FileUploadProps) {
     <div className="w-full max-w-2xl mx-auto">
       <div className="relative border-2 border-dashed rounded-lg p-8 transition-colors border-gray-300 hover:border-gray-400">
         {loading ? (
-          <Loader2 />
+          <p className="text-black text-center ">Loading...</p>
         ) : (
-          <input
-            type="file"
-            accept=".csv"
-            disabled={loading}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            onChange={handleChange}
-          />
+          <>
+            <div className="text-center ">
+              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-4 text-lg font-medium text-gray-700">
+                Click to browse and upload your CSV file
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                CSV must contain &apos;S. No.&apos;, &apos;Product Name&apos;,
+                and &apos;Input Image Urls&apos; columns
+              </p>
+              {error && (
+                <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded-md border border-red-200">
+                  {error}
+                </p>
+              )}
+            </div>
+            <input
+              type="file"
+              accept=".csv"
+              disabled={loading}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={handleChange}
+            />
+          </>
         )}
-
-        <div className="text-center">
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-4 text-lg font-medium text-gray-700">
-            Click to browse and upload your CSV file
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            CSV must contain &apos;S. No.&apos;, &apos;Product Name&apos;, and
-            &apos;Input Image Urls&apos; columns
-          </p>
-          {error && (
-            <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded-md border border-red-200">
-              {error}
-            </p>
-          )}
-        </div>
       </div>
 
       {csvPreview && (

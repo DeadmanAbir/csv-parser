@@ -3,6 +3,7 @@ import sharp from "sharp";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import dbConnect from "@/utils/connectDb";
+import { z } from "zod";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,12 +11,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+export const imageProcessorValidator = z.object({
+  id: z.string(),
+});
+
 export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id }: { id: string } = body;
+    const { id } = imageProcessorValidator.parse(body);
     await dbConnect();
     // Fetch product
     const image = await Product.findOne({ id });

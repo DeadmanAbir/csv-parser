@@ -2,14 +2,18 @@ import Product from "@/models/Product";
 import dbConnect from "@/utils/connectDb";
 import { parseCSV, validateFile } from "@/utils/helper";
 import { NextRequest, NextResponse } from "next/server";
-
+import { z } from "zod";
 export const maxDuration = 300;
+
+const fileSchema = z.object({
+  file: z.instanceof(File, { message: "File input missing" }),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
-
+    fileSchema.parse({ file });
     await dbConnect();
 
     const isValid = file && validateFile({ file });
