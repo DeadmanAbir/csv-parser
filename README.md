@@ -72,6 +72,11 @@ The system generates processed data, which may include modified image URLs or ot
   - Staus of processing request.
   - Processed data and results.
 
+
+### Postman Collection 
+
+Here's a postman collection containing all curated api links - [Postman Collection](https://www.postman.com/payload-cosmologist-18352458/workspace/my-workspace/collection/28067356-5aa63ab5-5f24-4b48-89e9-711bd55b2e9b?action=share&creator=28067356)
+
 ### API Documentation
 
 This section details the API endpoints for interacting with the CSV Image Processing System.
@@ -122,7 +127,7 @@ This section details the API endpoints for interacting with the CSV Image Proces
       - Example Request Body:
         ```json
         {
-          "requestId": "your-csv-upload-request-id"
+          "id": "your-csv-upload-request-id"
         }
         ```
 
