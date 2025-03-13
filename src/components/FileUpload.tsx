@@ -3,7 +3,6 @@ import React, { useCallback, useState } from "react";
 import { Upload, Table } from "lucide-react";
 import type { CSVPreviewData, ProcessingRequest } from "@/utils/types";
 import { validateFile } from "@/utils/helper";
-import { set } from "mongoose";
 
 interface FileUploadProps {
   setRequest: React.Dispatch<React.SetStateAction<ProcessingRequest | null>>;
