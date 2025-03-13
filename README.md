@@ -76,31 +76,40 @@ The system generates processed data, which may include modified image URLs or ot
 
 This section details the API endpoints for interacting with the CSV Image Processing System.
 
-1.  **Upload API:**
+1. **Upload API:**
 
-    - **Endpoint:** `https://csv-parser-theta.vercel.app/api/process-csv`
-    - **Method:** `POST`
-    - **Description:** This endpoint accepts CSV data (formatted as JSON) from the frontend. It stores the provided data in the database and initiates the processing workflow.
-    - **Request Body:**
-      - The request body should contain the CSV data formatted as a JSON object. The structure of the JSON should mirror the expected CSV format (e.g., an array of objects, where each object represents a row).
-
-      - Example Request Body:
+* **Endpoint:** `https://csv-parser-theta.vercel.app/api/process-csv`
+* **Method:** `POST`
+* **Description:** This endpoint accepts CSV files as input. It processes the CSV data, stores it in the database, and initiates the processing workflow. The API returns a unique status ID for the process, along with the JSON formatted data derived from the CSV file.
+* **Request Body:**
+    * The request body should contain the CSV file data encoded as `multipart/form-data`. You'll typically have a field in the form data (e.g., named "csvfile") containing the CSV file.
+    * * Example:*
+        
+        *             To send the CSV file, you would use a `multipart/form-data` request. The form data would include a field, for example, "csvfile", with the actual CSV file as the value.
+            
+* **Response:**
+    * A successful response will include:
+        *             A unique status ID, which can be used to track the processing status.
+        *             The JSON formatted data derived from the CSV file.
+    * * Example Response:*
+        
         ```json
-        [
-          {
-            "S. No.": "1",
-            "Product Name": "SKU1",
-            "Input Image Urls": "url1.jpg,url2.jpg,url3.jpg"
-          },
-          {
-            "S. No.": "2",
-            "Product Name": "SKU2",
-            "Input Image Urls": "url4.jpg,url5.jpg,url6.jpg"
-          }
-        ]
+        {
+          "statusId": "your-unique-status-id",
+          "csvData": [
+            {
+              "S. No.": "1",
+              "Product Name": "SKU1",
+              "Input Image Urls": "url1.jpg,url2.jpg,url3.jpg"
+            },
+            {
+              "S. No.": "2",
+              "Product Name": "SKU2",
+              "Input Image Urls": "url4.jpg,url5.jpg,url6.jpg"
+            }
+          ]
+        }
         ```
-    - **Response:**
-      - A successful response will typically include a unique request ID, which can be used to track the processing status.
 
 2.  **Image Processing Initiation API:**
 
