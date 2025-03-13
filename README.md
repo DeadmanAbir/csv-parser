@@ -1,5 +1,8 @@
 # CSV Parser
 
+
+## Video Overview - [Guide tutorial of this project](https://www.loom.com/share/ff8e3783d43345e89bbb4de2024ebb2d?sid=2dd4e2aa-24c7-4060-b091-213679e46bec)
+
 ## Overview
 
 This document provides a technical overview of a system designed for processing image data from CSV files. The system handles CSV data input, image processing, and data management.
